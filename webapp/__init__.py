@@ -19,16 +19,12 @@ def create_app():
 
 def register_dashapps(app):
     from webapp.dashapp1.layout import layout
-    
-    meta_viewport = {
-        "name": "viewport",
-        "content": "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
     dashapp1 = dash.Dash(__name__,
                          server=app,
                          url_base_pathname='/data/',
                          assets_folder=get_root_path(__name__) + '/data/assets/',
-                         meta_tags=[meta_viewport])
+                        )
 
     with app.app_context():
         dashapp1.title = 'Dashapp 1'

@@ -1,15 +1,9 @@
-from dash import html, dcc
-import plotly.express as px
-
-df = px.data.iris()
-fig = px.scatter(df, x="sepal_width", y="sepal_length")
+from dash import html
+import dash_leaflet as dl
 
 layout = html.Div(children=[
-    html.H1(children='Hello'),
-
-    dcc.Graph(
-        id='example-graph',
-        figure=fig
-    )
+    dl.Map(
+    dl.TileLayer(url="https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}"),
+           style={'width': '100%', 'height': '50vh', 'margin': "auto", "display": "block"},)
 ])
 
