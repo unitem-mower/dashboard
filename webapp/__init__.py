@@ -1,7 +1,7 @@
 from flask import Flask
 import dash
-from flask.helpers import get_root_path
 from flask_admin import Admin
+from flask_login import login_required
 
 
 def create_app():
@@ -22,14 +22,22 @@ def register_dashapps(app):
 
     dashapp1 = dash.Dash(__name__,
                          server=app,
-                         url_base_pathname='/data/',
-                         assets_folder=get_root_path(__name__) + '/data/assets/',
+                         url_base_pathname='/dashapp1/',
                         )
 
     with app.app_context():
-        dashapp1.title = 'Dashapp 1'
         dashapp1.layout = layout
-  
+
+        
+    protect_dashviews(dashapp1)
+
+
+def protect_dashviews(dashapp):
+    for view_func in dashapp.server.view_functions:
+        if view_func.startswith(dashapp.config.url_base_pathname):
+            dashapp.server.view_functions[view_func] = login_required(dashapp.server.view_functions[view_func])
+       
+            
 
 def register_admin(server):
     from webapp.extensions import db
