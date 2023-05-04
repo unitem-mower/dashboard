@@ -38,9 +38,35 @@ def login():
     return render_template("login.html", title="login page", form=form)
 
 
+@server_bp.route("/register", methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    
+    form = RegisterForm()
+    
+    if form.validate_on_submit() and form.password.data == form.confirm_password.data:
+        user = User(username=form.username.data)
+        user.set_password(form.password.data)
+        db.create_all()
+        db.session.add(user)
+        db.session.commit()
+        
+        return redirect(url_for('main.home'))
+    
+    return render_template("register.html", title="register", form=form)
+
+
 @server_bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    
+
+@server_bp.route("/dashapp1/")
+# @server_bp.route("/home")
+def dash():
+    if current_user.is_anonymous:
+        return redirect(url_for('main.login'))
+    return redirect(url_for('main.dashboard1'))
+
     return redirect(url_for('main.home'))
