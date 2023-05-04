@@ -2,7 +2,6 @@ from dash import html
 import plotly.graph_objects as go
 from dash import dcc
 import pandas as pd
-import requests
 import yaml
 
 with open('webapp\dashapp1\coord1.yaml', 'r') as f:
