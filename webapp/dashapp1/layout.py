@@ -1,19 +1,24 @@
 from dash import html
-import dash_leaflet as dl
 import plotly.graph_objects as go
 from dash import dcc
 import pandas as pd
+import yaml
+
+with open('webapp\dashapp1\coord1.yaml', 'r') as f:
+    coordinates = yaml.safe_load(f)
+
+latitudes = [point[0] for point in coordinates]
+longitudes = [point[1] for point in coordinates]
 
 map = go.Figure(go.Scattermapbox(
-    mode="lines", fillcolor = "rgba(255, 0, 0, 0.1)",
-    lon = [17.030902, 17.033488, 17.032913, 17.030244, 17.030902], lat = [51.110963, 51.110484, 51.109112, 51.109650, 51.110963],
+    mode="markers", fillcolor = "rgba(255, 0, 0, 0.1)",
+    lon = longitudes, lat = latitudes,
     marker = { 'size': 5, 'color': "red" }))
 
 map.update_layout(
     mapbox = {
         'style': "stamen-terrain",
-        #'center': { 'lon': -73.6, 'lat': 45.5},
-        'center': {'lon': 17.031, 'lat': 51.11},
+        'center': {'lon': 17.00524840104507, 'lat': 51.17241426539244},
         'zoom': 15,
         'layers': [{
             'source': {
@@ -22,25 +27,7 @@ map.update_layout(
                     'type': "Feature",
                     'geometry': {
                         'type': "MultiPolygon",
-                        'coordinates': [[[
-                            [-73.606352888, 45.507489991], [-73.606133883, 45.50687600],
-                            [-73.605905904, 45.506773980], [-73.603533905, 45.505698946],
-                            [-73.602475870, 45.506856969], [-73.600031904, 45.505696003],
-                            [-73.599379992, 45.505389066], [-73.599119902, 45.505632008],
-                            [-73.598896977, 45.505514039], [-73.598783894, 45.505617001],
-                            [-73.591308727, 45.516246185], [-73.591380782, 45.516280145],
-                            [-73.596778656, 45.518690062], [-73.602796770, 45.521348046],
-                            [-73.612239983, 45.525564037], [-73.612422919, 45.525642061],
-                            [-73.617229085, 45.527751983], [-73.617279234, 45.527774160],
-                            [-73.617304713, 45.527741334], [-73.617492052, 45.527498362],
-                            [-73.617533258, 45.527512253], [-73.618074188, 45.526759105],
-                            [-73.618271651, 45.526500673], [-73.618446320, 45.526287943],
-                            [-73.618968507, 45.525698560], [-73.619388002, 45.525216750],
-                            [-73.619532966, 45.525064183], [-73.619686662, 45.524889290],
-                            [-73.619787038, 45.524770086], [-73.619925742, 45.524584939],
-                            [-73.619954486, 45.524557690], [-73.620122362, 45.524377961],
-                            [-73.620201713, 45.524298907], [-73.620775593, 45.523650879]
-                        ]]]
+                        'coordinates': [coordinates]
                     }
                 }]
             },
@@ -49,7 +36,7 @@ map.update_layout(
 
 layout = html.Div(style={'backgroundColor': 'white'}, children=[
     html.H1(
-        children='Rynek Wrocław',
+        children='Map',
         style={
             'textAlign': 'center',
             'color': '#7FDBFF'
@@ -57,6 +44,7 @@ layout = html.Div(style={'backgroundColor': 'white'}, children=[
     ),
     dcc.Graph(
         id='example-graph',
-        figure=map
+        figure=map,
+        style={'height': '90vh', 'width': '100%'}
     )
 ])
