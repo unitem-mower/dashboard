@@ -9,14 +9,6 @@
         height: 100vh;
         margin: 0;
   }
-  .form {
-        background-color: white;
-        padding: 15px;
-        border-radius: 8px;
-        width: 400px;
-        height: 170px;
-        margin-top: -50px;
-  }
   .button {
         background-color: #2f2e41;
         color: white;
@@ -28,11 +20,16 @@
         width: 400px;
         text-decoration: none;
   }
+  .logo {
+        margin-top: -40px;
+        padding: 50px;
+        margin-bottom: 10px;
+    }
 </style>
 
-
 <div>
-  <div class="topnav">
+  <img class="logo" src="{{ url_for('static', filename='um_logo_white.png') }}" alt="Logo"/>
+  <div>
       <a class="button" href="logout">Logout</a>
       <a class="button" href="dashapp1/">Dashboard</a>
     </div>
