@@ -5,7 +5,20 @@ import plotly.graph_objects as go
 from datetime import datetime
 from pathlib import Path
 from dash.dependencies import Input, Output
+import dash_ag_grid as dag
+import pandas as pd
+import glob
+import os
 
+df = pd.read_csv(
+    "webapp/dashapp1/data.csv"
+)
+
+columnDefs = [
+    {
+        "children": [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}],
+    }
+]
 
 def calculate_area(points):
     n = len(points)
@@ -44,11 +57,8 @@ def calculate_coordinates(points):
 
     return latitudes, longitudes
 
-
-file_paths = [
-    'webapp/dashapp1/mower_09_37_27_05_12_43_27_05.yaml',
-    'webapp/dashapp1/mower_07_12_26_05_18_21_26_05.yaml'
-]  # Lista ścieżek do plików
+folder_path = 'webapp/dashapp1/'
+file_paths = glob.glob(os.path.join(folder_path, '*.yaml'))
 
 data_list = []
 
@@ -219,6 +229,18 @@ layout = html.Div(
             id="map-graph",
             figure=map,
         ),
+        html.Div(
+         [
+        dcc.Markdown("This grid has a grouped column"),
+        dag.AgGrid(
+            columnDefs=columnDefs,
+            rowData=df.to_dict("records"),
+            columnSize="sizeToFit",
+            defaultColDef={"resizable": True, "sortable": True, "filter": True},
+        ),
+            ],
+    style={"margin": 20},
+)
     ],
 )
 
