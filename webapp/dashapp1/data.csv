@@ -1,5 +1,5 @@
-StartDate,EndDate,contourArea,areaMown,relativeArea
-09:37 27 May,12:43 27 May,601.95,461.44,76.66
-09:37 27 May,12:43 27 May,601.95,461.44,76.66
-09:37 27 May,12:43 27 May,601.95,461.44,76.66
-09:37 27 May,12:43 27 May,601.95,461.44,76.66
+StartDate,EndDate,contourArea,areaMown,relativeArea,coverageAbsolute,coverageRelative,maxContourCrossingDistance
+09:37 27 May,12:43 27 May,601.95,461.44,76.66,100,100,100
+09:37 27 May,12:43 27 May,601.95,461.44,76.66,100,100,100
+09:37 27 May,12:43 27 May,601.95,461.44,76.66,100,100,100
+09:37 27 May,12:43 27 May,601.95,461.44,76.66,100,100,100

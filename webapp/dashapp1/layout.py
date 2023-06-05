@@ -16,7 +16,7 @@ df = pd.read_csv(
 
 columnDefs = [
     {
-        "children": [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}],
+        "children": [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}, {"field": "coverageAbsolute"}, {"field": "coverageRelative"}, {"field":"maxContourCrossingDistance"}],
     }
 ]
 
@@ -146,7 +146,7 @@ map.update_layout(
             "lon": object_longitudes[0],
             "lat": object_latitudes[0],
         },
-        "zoom": 14,
+        "zoom": 18,
         "layers": [mowed_area_layer],
     },
     showlegend=True,
@@ -171,76 +171,51 @@ app = dash.Dash(__name__)
 layout = html.Div(
     style={"backgroundColor": "white"},
     children=[
-        html.H1(
-            children="Map",
-            style={"textAlign": "center", "color": "#7FDBFF"},
-        ),
         html.Div(
-            id="dropdown-container",
+            className="row",
             children=[
-                html.H3(
-                    children="Wybierz czas rozpoczęcia:",
-                    style={"textAlign": "center"},
-                ),
-                dcc.Dropdown(
-                    id="select-date",
-                    options=[
-                        {
-                            "label": start_time.strftime("%Y-%m-%d %H:%M"),
-                            "value": i,
-                        }
-                        for i, start_time in enumerate(start_times)
+                html.Div(
+                    className="col",
+                    children=[
+                        dcc.Graph(
+                            id="map-graph",
+                            figure=map,
+                        )
                     ],
-                    value=0,
-                    placeholder="Wybierz datę i godzinę",
+                    style={"width": "50%", "display": "inline-block"},
+                ),
+                html.Div(
+                    className="col",
+                    children=[
+                        dcc.Graph(
+                            id="pie-chart",
+                            figure=go.Figure(
+                                data=[
+                                    go.Pie(
+                                        labels=["Countor area", "Area mowed"],
+                                        values=[area, mowed_area],
+                                        hole=0.5,
+                                        marker_colors=["green", "blue"],
+                                    )
+                                ],
+                            ),
+                        )
+                    ],
+                    style={"width": "50%", "display": "inline-block"},
                 ),
             ],
-        ),
-        html.H3(
-            id="start-time-text",
-            children="Data i godzina rozpoczęcia: {}".format(
-                start_times[0].strftime("%H:%M %d %B")
-            ),
-            style={"textAlign": "center"},
-        ),
-        html.H3(
-            id="end-time-text",
-            children="Data i godzina zakończenia: {}".format(
-                end_times[0].strftime("%H:%M %d %B")
-            ),
-            style={"textAlign": "center"},
-        ),
-        html.H3(
-            id="area-text",
-            children=area_text,
-            style={"textAlign": "center"},
-        ),
-        html.H3(
-            id="mowed-area-text",
-            children=mowed_area_text,
-            style={"textAlign": "center"},
-        ),
-        html.H3(
-            id="mowed-area-ratio-text",
-            children=mowed_area_ratio_text,
-            style={"textAlign": "center"},
-        ),
-        dcc.Graph(
-            id="map-graph",
-            figure=map,
         ),
         html.Div(
-         [
-        dcc.Markdown("This grid has a grouped column"),
-        dag.AgGrid(
-            columnDefs=columnDefs,
-            rowData=df.to_dict("records"),
-            columnSize="sizeToFit",
-            defaultColDef={"resizable": True, "sortable": True, "filter": True},
-        ),
+            [
+                dag.AgGrid(
+                    columnDefs=columnDefs,
+                    rowData=df.to_dict("records"),
+                    columnSize="sizeToFit",
+                    defaultColDef={"resizable": True, "sortable": True, "filter": True},
+                )
             ],
-    style={"margin": 20},
-)
+            style={"margin": 20},
+        ),
     ],
 )
 
@@ -305,7 +280,17 @@ def update_info(selected_date):
             },
             showlegend=True,
         )
-
+        pie_chart = go.Figure(
+        data=[
+            go.Pie(
+                labels=["Countor area", "Area mowed"],
+                values=[area, mowed_area],
+                hole=0.5,
+                marker_colors=["green", "blue"],
+            )
+        ],
+        layout=go.Layout(title="Pole konturu vs. Pole skoszone"),
+    )
     return (
         "Data i godzina rozpoczęcia: {}".format(start_time.strftime("%H:%M %d %B")),
         "Data i godzina zakończenia: {}".format(end_time.strftime("%H:%M %d %B")),
