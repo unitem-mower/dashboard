@@ -14,11 +14,12 @@ df = pd.read_csv(
     "webapp/dashapp1/data.csv"
 )
 
-columnDefs = [
-    {
-        "children": [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}, {"field": "coverageAbsolute"}, {"field": "coverageRelative"}, {"field":"maxContourCrossingDistance"}],
-    }
-]
+df["StartDate1"] = pd.to_datetime(df["StartDate"], format="%H:%M %d %B")
+df["EndDate1"] = pd.to_datetime(df["EndDate"], format="%H:%M %d %B")
+
+df["Duration"] = (df["EndDate1"] - df["StartDate1"]).dt.total_seconds() / 3600
+
+columnDefs = [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}, {"field": "coverageAbsolute"}, {"field": "coverageRelative"}, {"field":"maxContourCrossingDistance"}]
 
 def calculate_area(points):
     n = len(points)
@@ -180,9 +181,10 @@ layout = html.Div(
                         dcc.Graph(
                             id="map-graph",
                             figure=map,
+                            style={"height": "100vh"},
                         )
                     ],
-                    style={"width": "50%", "display": "inline-block"},
+                    style={"width": "70%", "display": "inline-block", "position": "fixed", "top": 0},
                 ),
                 html.Div(
                     className="col",
@@ -192,115 +194,58 @@ layout = html.Div(
                             figure=go.Figure(
                                 data=[
                                     go.Pie(
-                                        labels=["Countor area", "Area mowed"],
-                                        values=[area, mowed_area],
-                                        hole=0.5,
-                                        marker_colors=["green", "blue"],
+                                        labels=["Area mowed", "Area unmowed"],
+                                        values=[mowed_area/area, 1-mowed_area/area],
+                                        hole=0.6,
+                                        marker_colors=["green", "red"],
                                     )
                                 ],
+                                layout=go.Layout(title="Mowed area"),
                             ),
+                            style={"height": "40vh"},
                         )
                     ],
-                    style={"width": "50%", "display": "inline-block"},
+                    style={"width": "30%", "display": "inline-block", "position": "fixed", "top": 0, "right": 0},
                 ),
+                html.Div(
+                    className="col",
+                    children=[
+                        dcc.Graph(
+                            id="bar-chart",
+                            figure=go.Figure(
+                                data=[
+                                    go.Bar(
+                                        x=df["StartDate1"],
+                                        y=df["Duration"],
+                                        marker_color="green",
+                                    )
+                                ],
+                                layout=go.Layout(title="Time of mowing"),
+                            ),
+                            style={"height": "40vh"},
+                        )
+                    ],
+                    style={"width": "30%", "display": "inline-block", "position": "fixed","bottom": 200, "right": 0},
+                )
             ],
         ),
         html.Div(
             [
+                html.Div(id="selections-single-output"),
                 dag.AgGrid(
+                    id="selection-single-grid",
                     columnDefs=columnDefs,
                     rowData=df.to_dict("records"),
                     columnSize="sizeToFit",
                     defaultColDef={"resizable": True, "sortable": True, "filter": True},
+                    style={"height":"219px"},
+                    dashGridOptions={"rowSelection": "single"},
                 )
             ],
-            style={"margin": 20},
+            style={"margin": 20, "position": "fixed", "bottom": 0, "left": 0, "right": 0}
         ),
     ],
 )
-
-
-@app.callback(
-    [
-        Output("start-time-text", "children"),
-        Output("end-time-text", "children"),
-        Output("area-text", "children"),
-        Output("mowed-area-text", "children"),
-        Output("mowed-area-ratio-text", "children"),
-        Output("map-graph", "figure"),
-    ],
-    [Input("select-date", "value")],
-)
-def update_info(selected_date):
-    start_time = start_times[selected_date]
-    end_time = end_times[selected_date]
-    file_name = file_names[selected_date]
-    file_path = "webapp/dashapp1/{}.yaml".format(file_name)
-
-    with open(file_path, "r") as f:
-        data = yaml.safe_load(f)
-        object_coordinates = data["subgoals"]
-        object_latitudes, object_longitudes = calculate_coordinates(object_coordinates)
-        arrows = go.Scattermapbox(
-            mode="lines",
-            lon=object_longitudes,
-            lat=object_latitudes,
-            line=dict(color="blue", width=2),
-            showlegend=True,
-        )
-        map = go.Figure(
-            go.Scattermapbox(
-                mode="markers",
-                fillcolor="rgba(255, 0, 0, 0.1)",
-                lon=object_longitudes,
-                lat=object_latitudes,
-                marker={"size": 5, "color": "red"},
-            )
-        )
-        map.add_trace(arrows)
-        map.add_trace(contour)
-
-        mowed_area = calculate_mowed_area(object_coordinates)
-        mowed_area_text = "Pole skoszone: {:.2f} m²".format(mowed_area)
-
-        mowed_area_ratio = (mowed_area / area) * 100
-        mowed_area_ratio_text = "Stosunek skoszonego pola do pola konturu: {:.2f}%".format(
-            mowed_area_ratio
-        )
-
-        map.update_layout(
-            mapbox={
-                "style": "open-street-map",
-                "center": {
-                    "lon": object_longitudes[0],
-                    "lat": object_latitudes[0],
-                },
-                "zoom": 14,
-                "layers": [mowed_area_layer],
-            },
-            showlegend=True,
-        )
-        pie_chart = go.Figure(
-        data=[
-            go.Pie(
-                labels=["Countor area", "Area mowed"],
-                values=[area, mowed_area],
-                hole=0.5,
-                marker_colors=["green", "blue"],
-            )
-        ],
-        layout=go.Layout(title="Pole konturu vs. Pole skoszone"),
-    )
-    return (
-        "Data i godzina rozpoczęcia: {}".format(start_time.strftime("%H:%M %d %B")),
-        "Data i godzina zakończenia: {}".format(end_time.strftime("%H:%M %d %B")),
-        area_text,
-        mowed_area_text,
-        mowed_area_ratio_text,
-        map,
-    )
-
-
 app.layout = layout
 
 if __name__ == "__main__":
