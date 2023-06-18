@@ -105,7 +105,7 @@ map = go.Figure(
         lon=object_longitudes,
         lat=object_latitudes,
         marker={"size": 5, "color": "red"},
-    )
+    ),
 )
 
 map.add_trace(arrows)
@@ -150,7 +150,10 @@ map.update_layout(
         "zoom": 18,
         "layers": [mowed_area_layer],
     },
-    showlegend=True,
+    showlegend=False,
+    title="MOWING ROUTE",
+    font=dict(color="white", size=20, family="Fantasy"),
+    paper_bgcolor='rgb(67,207,165)'
 )
 
 # Parsowanie daty i godziny z nazwy pliku
@@ -167,10 +170,10 @@ for file_name in file_names:
     start_times.append(start_time)
     end_times.append(end_time)
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=['webapp/assets/styles.css'])
 
 layout = html.Div(
-    style={"backgroundColor": "white"},
+    style={"backgroundColor": 'rgb(67,207,165)'},
     children=[
         html.Div(
             className="row",
@@ -181,10 +184,10 @@ layout = html.Div(
                         dcc.Graph(
                             id="map-graph",
                             figure=map,
-                            style={"height": "100vh"},
+                            style={"height": "80vh"},
                         )
                     ],
-                    style={"width": "70%", "display": "inline-block", "position": "fixed", "top": 0},
+                    style={"width": "70%", "display": "inline-block", "position": "fixed", "top": 0, "backgroundColor": 'rgb(67,207,165)'},
                 ),
                 html.Div(
                     className="col",
@@ -196,16 +199,16 @@ layout = html.Div(
                                     go.Pie(
                                         labels=["Area mowed", "Area unmowed"],
                                         values=[mowed_area/area, 1-mowed_area/area],
-                                        hole=0.6,
-                                        marker_colors=["green", "red"],
+                                        hole=0.5,
+                                        marker_colors=["#2f2e41", "#bfbdd2"],
                                     )
                                 ],
-                                layout=go.Layout(title="Mowed area"),
+                                layout=go.Layout(title="MOWED AREA",font=dict(color="white", size=20, family="Fantasy"), paper_bgcolor='rgb(67,207,165)'),
                             ),
-                            style={"height": "40vh"},
+                            style={"height": "46vh","backgroundColor": 'rgb(67,207,165)'},
                         )
                     ],
-                    style={"width": "30%", "display": "inline-block", "position": "fixed", "top": 0, "right": 0},
+                    style={"width": "30%", "display": "inline-block", "position": "fixed", "top": 0, "right": 0, "backgroundColor": 'rgb(67,207,165)'},
                 ),
                 html.Div(
                     className="col",
@@ -217,15 +220,15 @@ layout = html.Div(
                                     go.Bar(
                                         x=df["StartDate1"],
                                         y=df["Duration"],
-                                        marker_color="green",
+                                        marker_color="#2f2e41",
                                     )
                                 ],
-                                layout=go.Layout(title="Time of mowing"),
+                                layout=go.Layout(title="MOWING TIME",font=dict(color="white", size=20, family="Fantasy"), paper_bgcolor='rgb(67,207,165)', plot_bgcolor='rgb(67,207,165)'),
                             ),
-                            style={"height": "40vh"},
+                            style={"height": "40vh","backgroundColor": 'rgb(67,207,165)'},
                         )
                     ],
-                    style={"width": "30%", "display": "inline-block", "position": "fixed","bottom": 200, "right": 0},
+                    style={"width": "30%", "display": "inline-block", "position": "fixed","bottom": 200, "right": 0,"backgroundColor": 'rgb(67,207,165)'},
                 )
             ],
         ),
@@ -233,16 +236,17 @@ layout = html.Div(
             [
                 html.Div(id="selections-single-output"),
                 dag.AgGrid(
-                    id="selection-single-grid",
+                    className="ag-theme-alpine color-fonts",
+                    #id="selection-single-grid",
                     columnDefs=columnDefs,
                     rowData=df.to_dict("records"),
                     columnSize="sizeToFit",
                     defaultColDef={"resizable": True, "sortable": True, "filter": True},
-                    style={"height":"219px"},
+                    style={"height": "220px"},
                     dashGridOptions={"rowSelection": "single"},
                 )
             ],
-            style={"margin": 20, "position": "fixed", "bottom": 0, "left": 0, "right": 0}
+            style={"margin": 20, "position": "fixed", "bottom": 0, "left": 0, "right": 0, "backgroundColor": 'rgb(67,207,165)'}
         ),
     ],
 )

@@ -1,0 +1,15 @@
+.ag-theme-alpine.color-fonts {
+    --ag-foreground-color: white;
+    --ag-background-color: #7f7d99;
+    --ag-header-foreground-color: white; 
+    --ag-header-background-color: #2f2e41;
+    --ag-odd-row-background-color: #bfbdd2;
+    --ag-header-column-resize-handle-color: white;
+
+    --ag-font-size: 19px;
+    --ag-font-family: monospace;
+}
+
+body {
+    background-color: #43cfa5;
+}
