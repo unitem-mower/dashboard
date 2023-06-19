@@ -208,7 +208,7 @@ layout = html.Div(
                                 ],
                                 layout=go.Layout(title="MOWED AREA",font=dict(color="white", size=20, family="monospace"), paper_bgcolor='rgb(67,207,165)'),
                             ),
-                            style={"height": "46vh","backgroundColor": 'rgb(67,207,165)'},
+                            style={"height": "43vh","backgroundColor": 'rgb(67,207,165)'},
                         )
                     ],
                     style={"width": "30%", "display": "inline-block", "position": "fixed", "top": 0, "right": 0, "backgroundColor": 'rgb(67,207,165)'},
@@ -226,7 +226,7 @@ layout = html.Div(
                                         marker_color="#2f2e41",
                                     )
                                 ],
-                                layout=go.Layout(title="MOWING TIME",font=dict(color="white", size=20, family="monospace"), paper_bgcolor='rgb(67,207,165)', plot_bgcolor='rgb(67,207,165)', xaxis=dict(tickfont=dict(size=13))),
+                                layout=go.Layout(title="MOWING TIME",font=dict(color="white", size=20, family="monospace"), paper_bgcolor='rgb(67,207,165)', plot_bgcolor='rgb(67,207,165)', xaxis=dict(tickfont=dict(size=11))),
                             ),
                             style={"height": "40vh","backgroundColor": 'rgb(67,207,165)'},
                         )
