@@ -21,8 +21,8 @@ df["Duration"] = (df["EndDate1"] - df["StartDate1"]).dt.total_seconds() / 3600
 
 columnDefs = [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}, {"field": "coverageAbsolute"}, {"field": "coverageRelative"}, {"field":"maxContourCrossingDistance"}]
 
-contourArea_value = df.loc[0, "contourArea"]
-areaMown_value = df.loc[0, "areaMown"]
+contourArea_value = df.loc[df.index[-1], "contourArea"]
+areaMown_value = df.loc[df.index[-1], "areaMown"]
 
 def calculate_area(points):
     n = len(points)
