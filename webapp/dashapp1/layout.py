@@ -21,6 +21,9 @@ df["Duration"] = (df["EndDate1"] - df["StartDate1"]).dt.total_seconds() / 3600
 
 columnDefs = [{"field": "StartDate"}, {"field": "EndDate"}, {"field": "contourArea"}, {"field": "areaMown"}, {"field": "relativeArea"}, {"field": "coverageAbsolute"}, {"field": "coverageRelative"}, {"field":"maxContourCrossingDistance"}]
 
+contourArea_value = df.loc[0, "contourArea"]
+areaMown_value = df.loc[0, "areaMown"]
+
 def calculate_area(points):
     n = len(points)
     area = 0.0
@@ -152,7 +155,7 @@ map.update_layout(
     },
     showlegend=False,
     title="MOWING ROUTE",
-    font=dict(color="white", size=20, family="Fantasy"),
+    font=dict(color="white", size=20, family="monospace"),
     paper_bgcolor='rgb(67,207,165)'
 )
 
@@ -198,12 +201,12 @@ layout = html.Div(
                                 data=[
                                     go.Pie(
                                         labels=["Area mowed", "Area unmowed"],
-                                        values=[mowed_area/area, 1-mowed_area/area],
+                                        values=[areaMown_value, contourArea_value - areaMown_value],
                                         hole=0.5,
                                         marker_colors=["#2f2e41", "#bfbdd2"],
                                     )
                                 ],
-                                layout=go.Layout(title="MOWED AREA",font=dict(color="white", size=20, family="Fantasy"), paper_bgcolor='rgb(67,207,165)'),
+                                layout=go.Layout(title="MOWED AREA",font=dict(color="white", size=20, family="monospace"), paper_bgcolor='rgb(67,207,165)'),
                             ),
                             style={"height": "46vh","backgroundColor": 'rgb(67,207,165)'},
                         )
@@ -218,12 +221,12 @@ layout = html.Div(
                             figure=go.Figure(
                                 data=[
                                     go.Bar(
-                                        x=df["StartDate1"],
+                                        x=df["StartDate"],
                                         y=df["Duration"],
                                         marker_color="#2f2e41",
                                     )
                                 ],
-                                layout=go.Layout(title="MOWING TIME",font=dict(color="white", size=20, family="Fantasy"), paper_bgcolor='rgb(67,207,165)', plot_bgcolor='rgb(67,207,165)'),
+                                layout=go.Layout(title="MOWING TIME",font=dict(color="white", size=20, family="monospace"), paper_bgcolor='rgb(67,207,165)', plot_bgcolor='rgb(67,207,165)', xaxis=dict(tickfont=dict(size=13))),
                             ),
                             style={"height": "40vh","backgroundColor": 'rgb(67,207,165)'},
                         )
